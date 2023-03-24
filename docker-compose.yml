@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+
+  sql-db:
+    image: postgres:15.2
+    container_name: best_travel_schema
+    restart: always
+    volumes:
+      - ./db/sql/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql
+      - ./db/sql/data.sql:/docker-entrypoint-initdb.d/data.sql
+    environment:
+      - POSTGRES_DB=best_travel
+      - POSTGRES_USER=alejandro
+      - POSTGRES_PASSWORD=debuggeandoideas
+    ports:
+      - "5432:5432"
+
+  cache-db:
+    image: redis:6.2-alpine
+    container_name: best_travel_cache
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --loglevel warning --requirepass debuggeandoideas
+
+  document-db:
+    image: mongo:6.0.4
+    restart: always
+    container_name: best_travel_users
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: master
+      MONGO_INITDB_ROOT_PASSWORD: debuggeandoideas
+      MONGO_INITDB_DATABASE: users
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./db/mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
