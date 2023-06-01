@@ -10,3 +10,6 @@ At 2023-03-21T11:41:30.186928243 new request GET fly, with size page 5 and order
 At 2023-03-21T11:41:31.114052311 new request GET fly, with size page 5 and order NONE
 At 2023-03-21T11:41:32.407796645 new request none, with size page 3 and order UPPER
 At 2023-03-21T11:41:33.095038589 new request none, with size page 3 and order UPPER
+At 2023-03-25T12:08:02.358608875 new request GET fly, with size page 5 and order NONE
+At 2023-03-25T12:08:10.287710220 new request GET fly, with size page 5 and order LOWER
+At 2023-03-25T12:08:16.396132485 new request GET fly, with size page 5 and order UPPER

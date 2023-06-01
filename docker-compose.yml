@@ -2,9 +2,9 @@ version: '3.8'
 
 services:
 
-  sql-db:
+  db:
     image: postgres:15.2
-    container_name: best_travel_schema
+    container_name: best_travel
     restart: always
     volumes:
       - ./db/sql/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql
