@@ -7,20 +7,19 @@ import com.debuggeando_ideas.best_travel.domain.repositories.jpa.HotelRepository
 import com.debuggeando_ideas.best_travel.infraestructure.services.HotelService;
 import com.debuggeando_ideas.best_travel.spec.ServiceSpec;
 import com.debuggeando_ideas.best_travel.util.enums.SortType;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Collections;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class HotelServiceTest extends ServiceSpec {
 
@@ -30,12 +29,10 @@ public class HotelServiceTest extends ServiceSpec {
     @Autowired
     private HotelService hotelService;
 
-
-
     @Test
     @DisplayName("realAll should work")
     void realAll() {
-        var page= new PageImpl<HotelEntity>(DummyData.HOTEL_ENTITIES);
+        var page= new PageImpl<>(DummyData.HOTEL_ENTITIES);
         when(hotelRepositoryMock.findAll(isA(Pageable.class))).thenReturn(page);
         var target = this.hotelService.realAll(0, 5, SortType.NONE);
         assertEquals(3, target.getTotalElements());
@@ -44,5 +41,28 @@ public class HotelServiceTest extends ServiceSpec {
                             assertEquals(HotelResponse.class.getSimpleName(), t.getClass().getSimpleName());
                         });
         verify(hotelRepositoryMock, times(1)).findAll(any(Pageable.class));
+    }
+
+    @Test
+    @DisplayName("readLessPrice should work")
+    void readLessPrice() {
+        var price = BigDecimal.valueOf(15);
+        var hotelsResponse = Set.of(DummyData.HOTEL_1);
+        when(hotelRepositoryMock.findByPriceLessThan(price)).thenReturn(hotelsResponse);
+        var target = this.hotelService.readLessPrice(price);
+
+        assertEquals(1, target.size());
+        hotelsResponse.forEach(hotel -> {
+            var response = this.entityToResponse(hotel);
+            var expected = this.entityToResponse(DummyData.HOTEL_1);
+            assertEquals(expected, response);
+        });
+        verify(hotelRepositoryMock, times(1)).findByPriceLessThan(price);
+    }
+
+    private HotelResponse entityToResponse(HotelEntity entity) {
+        HotelResponse response = new HotelResponse();
+        BeanUtils.copyProperties(entity, response);
+        return response;
     }
 }
